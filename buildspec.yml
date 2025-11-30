@@ -1,0 +1,27 @@
+version: 0.2
+
+env:
+  variables:
+    # Provide in CodeBuild project or CodePipeline (do NOT commit real URI)
+    ECR_URI: "<ACCOUNT_ID>.dkr.ecr.<region>.amazonaws.com/my-springboot-app"
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_URI
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - echo IMAGE_TAG=$IMAGE_TAG
+  build:
+    commands:
+      - echo Building the Docker image...
+      - docker build -t $ECR_URI:$IMAGE_TAG .
+      - docker tag $ECR_URI:$IMAGE_TAG $ECR_URI:latest
+  post_build:
+    commands:
+      - echo Pushing the Docker image...
+      - docker push $ECR_URI:$IMAGE_TAG
+      - docker push $ECR_URI:latest
+      - printf '[{"name":"container","imageUri":"%s"}]' $ECR_URI:$IMAGE_TAG > imagedefinitions.json
+artifacts:
+  files: imagedefinitions.json
