@@ -1,13 +1,28 @@
-# multi-stage build
-FROM maven:3.8.7-eclipse-temurin-17 AS builder
-WORKDIR /workspace
-COPY pom.xml .
-COPY src ./src
-# build a fat jar (adjust maven flags to your project)
-RUN mvn -B -DskipTests package
+# Use official Maven image to build the project
+FROM maven:3.8.7-eclipse-temurin-17 AS build
 
-FROM eclipse-temurin:17-jre
-ARG JAR_FILE=target/*.jar
-COPY --from=builder /workspace/${JAR_FILE} /app/app.jar
+# Set working directory inside container
+WORKDIR /app
+
+# Copy pom.xml and download dependencies
+COPY pom.xml .
+
+RUN mvn dependency:go-offline -B
+
+# Copy source code
+COPY src ./src
+
+# Build the project (skip tests for speed)
+RUN mvn clean package -DskipTests
+
+# Use a lightweight OpenJDK runtime image
+FROM eclipse-temurin:17-jre-alpine
+
+# Copy the jar from the build stage
+COPY --from=build /app/target/demo-0.0.1-SNAPSHOT.jar /app/demo.jar
+
+# Expose port 8080
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+
+# Run the jar file
+ENTRYPOINT ["java","-jar","/app/demo.jar"]
