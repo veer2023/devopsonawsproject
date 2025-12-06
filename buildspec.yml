@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     # Provide in CodeBuild project or CodePipeline (do NOT commit real URI)
-    ECR_URI: "549703024737.dkr.ecr.us-east-1.amazonaws.com/springboot-app"
+    ECR_URI: "611195126552.dkr.ecr.us-east-1.amazonaws.com/springboot-app"
 phases:
   pre_build:
     commands:
