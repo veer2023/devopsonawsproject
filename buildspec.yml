@@ -6,12 +6,13 @@ env:
     ECR_URI: "611195126552.dkr.ecr.us-east-1.amazonaws.com/springboot-app"
 phases:
   pre_build:
-    commands:
-      - echo Logging in to Amazon ECR...
-      - aws --version
-      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_URI
-      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
-      - echo IMAGE_TAG=$IMAGE_TAG
+     commands:
+    - echo Logging in to Amazon ECR...
+    - aws --version
+    - REGISTRY=611195126552.dkr.ecr.us-east-1.amazonaws.com
+    - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $REGISTRY
+    - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+    - echo IMAGE_TAG=$IMAGE_TAG
   build:
     commands:
       - echo Building the Docker image...
