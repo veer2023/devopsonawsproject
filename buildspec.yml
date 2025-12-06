@@ -6,7 +6,7 @@ env:
     ECR_URI: "611195126552.dkr.ecr.us-east-1.amazonaws.com/springboot-app"
 phases:
   pre_build:
-     commands:
+    commands:
     - echo Logging in to Amazon ECR...
     - aws --version
     - REGISTRY=611195126552.dkr.ecr.us-east-1.amazonaws.com
