@@ -7,6 +7,12 @@ env:
 phases:
   pre_build:
     commands:
+      - echo "Listing current directory contents:"
+      - ls -la
+      - echo "Listing /codebuild/output directory contents:"
+      - ls -la /codebuild/output
+      - echo "Listing /codebuild/output/src***/src directory contents:"
+      - ls -la /codebuild/output/src***/src
       - echo Logging in to ECR...
       - REGION=us-east-1
       - REGISTRY=637423386762.dkr.ecr.$REGION.amazonaws.com
